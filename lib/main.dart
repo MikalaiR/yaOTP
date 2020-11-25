@@ -45,17 +45,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      Provider<Box>(
-        lazy: false,
-        create: (_) {
-          return Hive.box(DB_NAME_SETTINGS);
-        },
-      ),
-      ChangeNotifierProxyProvider<Box, OTPController>(
-          create: (_) => null, update: (_, box, __) => OTPController(box: box)),
-      ChangeNotifierProxyProvider<Box, SettingsController>(
-          create: (_) => null,
-          update: (_, box, __) => SettingsController(box: box)),
+      ChangeNotifierProvider<OTPController>(
+          create: (_) => OTPController(box: Hive.box(DB_NAME_SETTINGS))),
+      ChangeNotifierProvider<SettingsController>(
+          create: (_) => SettingsController(box: Hive.box(DB_NAME_SETTINGS))),
       StreamProvider<DateTime>.value(
           initialData: DateTime.now(),
           value: Stream.periodic(Duration(milliseconds: 100), (_) {
