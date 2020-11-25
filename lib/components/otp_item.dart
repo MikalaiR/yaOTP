@@ -116,8 +116,8 @@ class _TOTPValueState extends State<TOTPValue> {
 
   @override
   void didUpdateWidget(covariant TOTPValue oldWidget) {
-    if (oldWidget.curTime.millisecondsSinceEpoch ~/ 1000 !=
-        widget.curTime.millisecondsSinceEpoch ~/ 1000) {
+    if (oldWidget.curTime.millisecondsSinceEpoch ~/ (1000 * widget.securTOTP.interval) !=
+        widget.curTime.millisecondsSinceEpoch ~/ (1000 * widget.securTOTP.interval)) {
       setState(() {
         this._totp = widget.securTOTP.getTotp(widget.curTime);
       });
