@@ -35,7 +35,7 @@ dependencies:
   permission_handler: ^5.0.1
   pointycastle: ^2.0.0
   qr_code_scanner: ^0.0.13
-  flutter_keychain: ^1.0.0
+  flutter_secure_storage: ^3.3.5
   cached_network_image: ^2.3.3
   flutter_file_dialog: ^1.0.0
 
@@ -62,8 +62,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/padlock.png
+  assets:
+    - images/padlock.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

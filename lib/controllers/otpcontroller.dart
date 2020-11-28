@@ -9,10 +9,18 @@ import 'package:yaotp/models/securtotp.dart';
 class OTPController with ChangeNotifier {
   Box<dynamic> box;
 
-  UnmodifiableListView<SecurTOTP> get all => UnmodifiableListView(
+  UnmodifiableListView<SecurTOTP> _all;
+
+  UnmodifiableListView<SecurTOTP> get all => _all ??=  UnmodifiableListView(
       box.values.where((element) => element is SecurTOTP).cast<SecurTOTP>());
 
   OTPController({this.box});
+
+  @override
+  void notifyListeners() {
+    _all = null;
+    super.notifyListeners();
+  }
 
   Future<void> add(SecurTOTP otp) async {
     await box.add(otp);

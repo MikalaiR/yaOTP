@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_keychain/flutter_keychain.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -24,20 +24,18 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(SecurTOTPAdapter());
 
-  String base64key =
-      await FlutterKeychain.get(key: KEYCHAIN_KEY_ENCRYPTION_KEY);
+  final storage = FlutterSecureStorage();
+
+  String base64key = await storage.read(key: KEYCHAIN_KEY_ENCRYPTION_KEY);
 
   if (base64key == null) {
-    final newKey = Hive.generateSecureKey();
-    base64key = base64.encode(newKey);
-    await FlutterKeychain.put(
-        key: KEYCHAIN_KEY_ENCRYPTION_KEY, value: base64key);
+    base64key = base64.encode(Hive.generateSecureKey());
+    await storage.write(key: KEYCHAIN_KEY_ENCRYPTION_KEY, value: base64key);
   }
 
   final key = base64.decode(base64key);
 
   await Hive.openBox(DB_NAME_SETTINGS, encryptionCipher: HiveAesCipher(key));
-
   runApp(MyApp());
 }
 
