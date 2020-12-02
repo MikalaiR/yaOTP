@@ -35,7 +35,7 @@ class BackupEncryptionHelper {
     int keyLength = pbkdf2KeyLength,
   }) {
     final derivator = KeyDerivator("SHA-512/HMAC/PBKDF2")
-      ..init(Pbkdf2Parameters(salt, pbkdf2IterationsCount, pbkdf2KeyLength));
+      ..init(Pbkdf2Parameters(salt, iterationsCount, keyLength));
 
     return derivator.process(utf8.encode(password));
   }
