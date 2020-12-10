@@ -12,10 +12,10 @@ import 'package:yaotp/components/app_lock.dart';
 import 'package:yaotp/components/loading_overlay.dart';
 import 'package:yaotp/components/password_dialog.dart';
 import 'package:yaotp/components/screen_lock/screen_lock.dart';
-import 'package:yaotp/controllers/otpcontroller.dart';
-import 'package:yaotp/controllers/settings.dart';
 import 'package:yaotp/generated/l10n.dart';
 import 'package:yaotp/services/backup_encryption_helper.dart';
+import 'package:yaotp/viewmodels/otp.dart';
+import 'package:yaotp/viewmodels/settings.dart';
 
 class Settings extends StatelessWidget {
   Future<String> showPasswordDialog(
@@ -35,8 +35,8 @@ class Settings extends StatelessWidget {
     }
 
     await LoadingOverlay.of(context).during(() async {
-      final OTPController controller =
-          Provider.of<OTPController>(context, listen: false);
+      final OTPListViewModel controller =
+          Provider.of<OTPListViewModel>(context, listen: false);
 
       try {
         final Uint8List rawBackup = utf8.encode(await controller.makeBackup());
@@ -111,7 +111,7 @@ class Settings extends StatelessWidget {
         rawBackup = raw;
       }
 
-      await Provider.of<OTPController>(context, listen: false)
+      await Provider.of<OTPListViewModel>(context, listen: false)
           .loadBackup(utf8.decode(rawBackup));
 
       ScaffoldMessenger.of(context)
@@ -150,7 +150,7 @@ class Settings extends StatelessWidget {
       appBar: AppBar(
         title: Text(S.of(context).settings),
       ),
-      body: Consumer<SettingsController>(
+      body: Consumer<SettingsViewModel>(
         builder: (context, settingsController, _) => ListView(
           children: <Widget>[
             SwitchListTile(

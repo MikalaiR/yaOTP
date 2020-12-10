@@ -6,15 +6,15 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:yaotp/models/securtotp.dart';
 
-class OTPController with ChangeNotifier {
+class OTPListViewModel with ChangeNotifier {
   Box<dynamic> box;
 
   UnmodifiableListView<SecurTOTP> _all;
 
-  UnmodifiableListView<SecurTOTP> get all => _all ??=  UnmodifiableListView(
+  UnmodifiableListView<SecurTOTP> get all => _all ??= UnmodifiableListView(
       box.values.where((element) => element is SecurTOTP).cast<SecurTOTP>());
 
-  OTPController({this.box});
+  OTPListViewModel({this.box});
 
   @override
   void notifyListeners() {

@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 
-class SettingsController with ChangeNotifier {
+class SettingsViewModel with ChangeNotifier {
   static const String DB_KEY_PIN_CODE = "pin_code";
   static const String DB_KEY_IS_BIOMETRICS_ENABLED = "use_biometrics";
 
   Box<dynamic> box;
 
-  SettingsController({this.box});
+  SettingsViewModel({this.box});
 
   bool get isAuthenticationEnabled {
     return box.get(DB_KEY_PIN_CODE, defaultValue: null) != null;

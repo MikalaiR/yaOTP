@@ -7,10 +7,10 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:yaotp/components/app_lock.dart';
-import 'package:yaotp/controllers/otpcontroller.dart';
-import 'package:yaotp/controllers/settings.dart';
 import 'package:yaotp/generated/l10n.dart';
 import 'package:yaotp/models/securtotp.dart';
+import 'package:yaotp/viewmodels/otp.dart';
+import 'package:yaotp/viewmodels/settings.dart';
 import 'package:yaotp/views/form.dart';
 import 'package:yaotp/views/home.dart';
 import 'package:yaotp/views/lock.dart';
@@ -43,10 +43,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      ChangeNotifierProvider<OTPController>(
-          create: (_) => OTPController(box: Hive.box(DB_NAME_SETTINGS))),
-      ChangeNotifierProvider<SettingsController>(
-          create: (_) => SettingsController(box: Hive.box(DB_NAME_SETTINGS))),
+      ChangeNotifierProvider<OTPListViewModel>(
+          create: (_) => OTPListViewModel(box: Hive.box(DB_NAME_SETTINGS))),
+      ChangeNotifierProvider<SettingsViewModel>(
+          create: (_) => SettingsViewModel(box: Hive.box(DB_NAME_SETTINGS))),
       StreamProvider<DateTime>.value(
           initialData: DateTime.now(),
           value: Stream.periodic(Duration(milliseconds: 100), (_) {
@@ -60,7 +60,7 @@ class MainWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppLock(
-      enabled: Provider.of<SettingsController>(context, listen: false)
+      enabled: Provider.of<SettingsViewModel>(context, listen: false)
           .isAuthenticationEnabled,
       builder: (_) => MaterialApp(
         themeMode: ThemeMode.system,

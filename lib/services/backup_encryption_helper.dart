@@ -3,7 +3,12 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/block/aes_fast.dart';
+import 'package:pointycastle/block/modes/gcm.dart';
+import 'package:pointycastle/digests/sha512.dart';
+import 'package:pointycastle/key_derivators/api.dart';
+import 'package:pointycastle/key_derivators/pbkdf2.dart';
+import 'package:pointycastle/macs/hmac.dart';
 
 /*
  * Backup format [bytes]:
@@ -21,12 +26,12 @@ class BackupEncryptionHelperParam {
   BackupEncryptionHelperParam({this.password, this.data});
 }
 
-class BackupEncryptionHelper {
+abstract class BackupEncryptionHelper {
   static const int pbkdf2IterationsCount = 8192;
   static const int pbkdf2KeyLength = 32;
 
   static Uint8List int32BigEndianBytes(int value) =>
-      Uint8List(4)..buffer.asByteData().setInt32(0, value, Endian.big);
+      Uint8List(8)..buffer.asByteData().setInt32(0, value, Endian.big);
 
   static Uint8List deriveKey(
     String password, {
@@ -34,18 +39,19 @@ class BackupEncryptionHelper {
     int iterationsCount = pbkdf2IterationsCount,
     int keyLength = pbkdf2KeyLength,
   }) {
-    final derivator = KeyDerivator("SHA-512/HMAC/PBKDF2")
-      ..init(Pbkdf2Parameters(salt, iterationsCount, keyLength));
+    final KeyDerivator derivator =
+        PBKDF2KeyDerivator(HMac.withDigest(SHA512Digest()))
+          ..init(Pbkdf2Parameters(salt, iterationsCount, keyLength));
 
     return derivator.process(utf8.encode(password));
   }
 
   static Uint8List encrypt(String password, Uint8List data) {
     final Random random = Random.secure();
-    final salt = random.nextBytes(16);
+    final Uint8List salt = random.nextBytes(16);
 
-    final key = deriveKey(password, salt: salt);
-    final nonce = random.nextBytes(12);
+    final Uint8List key = deriveKey(password, salt: salt);
+    final Uint8List nonce = random.nextBytes(12);
 
     final Uint8List header = Uint8List.fromList(
         int32BigEndianBytes(pbkdf2IterationsCount) +
@@ -59,14 +65,15 @@ class BackupEncryptionHelper {
   }
 
   static Uint8List decrypt(String password, Uint8List data) {
-    final header = Uint8List.sublistView(data, 0, 8 + 16);
-    final nonce = Uint8List.sublistView(data, 8 + 16, 8 + 16 + 12);
+    final Uint8List header = Uint8List.sublistView(data, 0, 8 + 16);
+    final Uint8List nonce = Uint8List.sublistView(data, 8 + 16, 8 + 16 + 12);
 
-    final iterationsCount = header.buffer.asByteData().getInt32(0, Endian.big);
-    final keyLength = header.buffer.asByteData().getInt32(4, Endian.big);
-    final salt = Uint8List.sublistView(header, 8, 8 + 16);
+    final int iterationsCount =
+        header.buffer.asByteData().getInt32(0, Endian.big);
+    final int keyLength = header.buffer.asByteData().getInt32(4, Endian.big);
+    final Uint8List salt = Uint8List.sublistView(header, 8, 8 + 16);
 
-    final key = deriveKey(password,
+    final Uint8List key = deriveKey(password,
         salt: salt, iterationsCount: iterationsCount, keyLength: keyLength);
 
     final GCMBlockCipher cipher = GCMBlockCipher(AESFastEngine())

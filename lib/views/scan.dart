@@ -16,12 +16,10 @@ class _QRScannerState extends State<QRScanner> {
   StreamSubscription subscription;
 
   final GlobalKey qrKey = GlobalKey();
-  final GlobalKey<ScaffoldState> scKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scKey,
       appBar: AppBar(
         actions: [
           IconButton(
@@ -62,6 +60,7 @@ class _QRScannerState extends State<QRScanner> {
           subscription = null;
 
           controller.pauseCamera();
+
           Navigator.pop(context, otp);
         } else {
           showErrorSnackbar(S.of(context).wrongQrCodeFormat);

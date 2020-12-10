@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:yaotp/controllers/otpcontroller.dart';
 import 'package:yaotp/generated/l10n.dart';
 import 'package:yaotp/models/securtotp.dart';
+import 'package:yaotp/viewmodels/otp.dart';
 
 enum _MenuAction { Nop, Delete }
 
@@ -34,7 +34,7 @@ class OTPItem2 extends StatelessWidget {
     );
 
     if (result == _MenuAction.Delete) {
-      Provider.of<OTPController>(context, listen: false).delete(securTOTP);
+      Provider.of<OTPListViewModel>(context, listen: false).delete(securTOTP);
     }
   }
 
@@ -44,12 +44,21 @@ class OTPItem2 extends StatelessWidget {
         ? (securTOTP.issuer + ' (' + securTOTP.accountName + ')')
         : securTOTP.accountName);
 
-    Widget leading = CircleAvatar(
+    Widget imgPlaceholder = CircleAvatar(
       backgroundColor: Theme.of(context).cardColor,
-      backgroundImage: securTOTP.imageUrl != null
-          ? CachedNetworkImageProvider(securTOTP.imageUrl)
-          : AssetImage('images/padlock.png'),
+      backgroundImage: AssetImage('images/padlock.png'),
     );
+
+    Widget leading = securTOTP.imageUrl != null
+        ? CachedNetworkImage(
+            imageUrl: securTOTP.imageUrl,
+            imageBuilder: (context, imageProvider) => CircleAvatar(
+                  backgroundColor: Theme.of(context).cardColor,
+                  backgroundImage: imageProvider,
+                ),
+            placeholder: (context, url) => imgPlaceholder,
+            errorWidget: (context, url, error) => imgPlaceholder)
+        : imgPlaceholder;
 
     return Card(
       child: Consumer<DateTime>(
@@ -116,8 +125,10 @@ class _TOTPValueState extends State<TOTPValue> {
 
   @override
   void didUpdateWidget(covariant TOTPValue oldWidget) {
-    if (oldWidget.curTime.millisecondsSinceEpoch ~/ (1000 * widget.securTOTP.interval) !=
-        widget.curTime.millisecondsSinceEpoch ~/ (1000 * widget.securTOTP.interval)) {
+    if (oldWidget.curTime.millisecondsSinceEpoch ~/
+            (1000 * widget.securTOTP.interval) !=
+        widget.curTime.millisecondsSinceEpoch ~/
+            (1000 * widget.securTOTP.interval)) {
       setState(() {
         this._totp = widget.securTOTP.getTotp(widget.curTime);
       });

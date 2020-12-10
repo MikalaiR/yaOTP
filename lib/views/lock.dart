@@ -4,8 +4,8 @@ import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:yaotp/components/app_lock.dart';
 import 'package:yaotp/components/screen_lock/screen_lock.dart';
-import 'package:yaotp/controllers/settings.dart';
 import 'package:yaotp/generated/l10n.dart';
+import 'package:yaotp/viewmodels/settings.dart';
 
 class Lock extends StatelessWidget {
   @override
@@ -21,12 +21,11 @@ class Lock extends StatelessWidget {
       },
       backgroundColorOpacity: 1,
       canCancel: false,
-      canBiometric:
-          Provider.of<SettingsController>(context).isBiometricsEnabled,
+      canBiometric: Provider.of<SettingsViewModel>(context).isBiometricsEnabled,
       showBiometricFirst:
-          Provider.of<SettingsController>(context).isBiometricsEnabled,
+          Provider.of<SettingsViewModel>(context).isBiometricsEnabled,
       onValidate: (context, pin) async {
-        return await Provider.of<SettingsController>(context, listen: false)
+        return await Provider.of<SettingsViewModel>(context, listen: false)
             .checkPinCode(pin);
       },
       biometricAuthenticate: (context) async {

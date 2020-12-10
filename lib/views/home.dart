@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:yaotp/components/otp_item.dart';
-import 'package:yaotp/controllers/otpcontroller.dart';
 import 'package:yaotp/generated/l10n.dart';
+import 'package:yaotp/viewmodels/otp.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -50,7 +50,7 @@ class HomeFab extends StatelessWidget {
 
             final otp = await Navigator.pushNamed(context, '/scan');
             if (otp != null) {
-              Provider.of<OTPController>(context, listen: false).add(otp);
+              Provider.of<OTPListViewModel>(context, listen: false).add(otp);
             }
           },
         ),
@@ -61,7 +61,7 @@ class HomeFab extends StatelessWidget {
           onPressed: () async {
             final otp = await Navigator.pushNamed(context, '/form');
             if (otp != null) {
-              Provider.of<OTPController>(context, listen: false).add(otp);
+              Provider.of<OTPListViewModel>(context, listen: false).add(otp);
             }
           },
         )
@@ -74,7 +74,7 @@ class HomeFab extends StatelessWidget {
 class OTPList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<OTPController>(
+    return Consumer<OTPListViewModel>(
       builder: (context, controller, _) => ListView.builder(
         itemCount: controller.all.length,
         itemBuilder: (context, index) =>
