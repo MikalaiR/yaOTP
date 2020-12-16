@@ -154,6 +154,15 @@ class Settings extends StatelessWidget {
         builder: (context, settingsController, _) => ListView(
           children: <Widget>[
             SwitchListTile(
+              secondary: Icon(Icons.visibility_off),
+              title: Text(S.of(context).hideCodes),
+              value: settingsController.isCodesHidden,
+              onChanged: (bool val) async {
+                settingsController.setCodesHidden(val);
+              },
+            ),
+            Divider(height: 1),
+            SwitchListTile(
               secondary: Icon(Icons.security),
               title: Text(S.of(context).usePinCode),
               value: settingsController.isAuthenticationEnabled,

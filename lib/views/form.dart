@@ -17,9 +17,9 @@ class _OPTFormState extends State<OTPForm> {
 
   String _secret;
   String _issuer;
-  int _interval;
-  int _digits;
-  String _algorithm;
+  int _interval = 30;
+  int _digits = 6;
+  String _algorithm = 'SHA1';
   String _accountName;
   String _imageUrl;
 

@@ -33,6 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "enterPassword" : MessageLookupByLibrary.simpleMessage("Введите пароль"),
     "fieldCannotBeEmpty" : MessageLookupByLibrary.simpleMessage("Это поле не может быть пустым"),
     "grantCameraAccessToProceed" : MessageLookupByLibrary.simpleMessage("Необходимо разрешение на доступ к камере"),
+    "hideCodes" : MessageLookupByLibrary.simpleMessage("Скрывать коды"),
     "iconUrl" : MessageLookupByLibrary.simpleMessage("URL иконки"),
     "imageUrlHintText" : MessageLookupByLibrary.simpleMessage("например, https://google.com/favicon.ico"),
     "importFromBackup" : MessageLookupByLibrary.simpleMessage("Импорт из резервной копии"),

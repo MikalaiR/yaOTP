@@ -34,5 +34,6 @@
   "enterPassword": "Введите пароль",
   "password": "Пароль",
   "emptyToLeaveUnencrypted": "Оставьте пустым чтобы не шифровать",
-  "save": "Сохранить"
+  "save": "Сохранить",
+  "hideCodes": "Скрывать коды"
 }

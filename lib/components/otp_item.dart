@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,8 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:yaotp/generated/l10n.dart';
 import 'package:yaotp/models/securtotp.dart';
 import 'package:yaotp/viewmodels/otp.dart';
+import 'package:yaotp/viewmodels/settings.dart';
 
-enum _MenuAction { Nop, Delete }
+enum _MenuAction { Nop, Edit, Delete }
 
 class OTPItem2 extends StatelessWidget {
   final SecurTOTP securTOTP;
@@ -33,8 +36,15 @@ class OTPItem2 extends StatelessWidget {
       ],
     );
 
-    if (result == _MenuAction.Delete) {
-      Provider.of<OTPListViewModel>(context, listen: false).delete(securTOTP);
+    switch (result) {
+      case _MenuAction.Delete:
+        Provider.of<OTPListViewModel>(context, listen: false).delete(securTOTP);
+        break;
+      case _MenuAction.Edit:
+        break;
+      case _MenuAction.Nop:
+      default:
+        break;
     }
   }
 
@@ -61,8 +71,8 @@ class OTPItem2 extends StatelessWidget {
         : imgPlaceholder;
 
     return Card(
-      child: Consumer<DateTime>(
-        builder: (context, currentTime, _) => ListTile(
+      child: Consumer2<DateTime, SettingsViewModel>(
+        builder: (context, currentTime, settings, _) => ListTile(
           onTap: () async {
             await Clipboard.setData(
                 ClipboardData(text: securTOTP.getTotp(currentTime)));
@@ -72,7 +82,7 @@ class OTPItem2 extends StatelessWidget {
                   content: Text(S.of(context).otpHasBeenCopiedToClipboard)));
           },
           onLongPress: () => showItemMenu(context),
-          title: TOTPValue(securTOTP, currentTime),
+          title: TOTPValue(securTOTP, currentTime, settings.isCodesHidden),
           subtitle: subtitle,
           leading: leading,
           trailing: TrailingIndicator(
@@ -107,8 +117,9 @@ class TrailingIndicator extends StatelessWidget {
 class TOTPValue extends StatefulWidget {
   final DateTime curTime;
   final SecurTOTP securTOTP;
+  final bool hideValue;
 
-  TOTPValue(this.securTOTP, this.curTime);
+  TOTPValue(this.securTOTP, this.curTime, this.hideValue);
 
   @override
   State<TOTPValue> createState() => _TOTPValueState();
@@ -125,19 +136,24 @@ class _TOTPValueState extends State<TOTPValue> {
 
   @override
   void didUpdateWidget(covariant TOTPValue oldWidget) {
-    if (oldWidget.curTime.millisecondsSinceEpoch ~/
-            (1000 * widget.securTOTP.interval) !=
-        widget.curTime.millisecondsSinceEpoch ~/
-            (1000 * widget.securTOTP.interval)) {
+    if ((oldWidget.curTime.millisecondsSinceEpoch ~/
+                (1000 * widget.securTOTP.interval) !=
+            widget.curTime.millisecondsSinceEpoch ~/
+                (1000 * widget.securTOTP.interval)) ||
+        oldWidget.hideValue != widget.hideValue) {
       setState(() {
-        this._totp = widget.securTOTP.getTotp(widget.curTime);
+        if (widget.hideValue) {
+          this._totp = '*' * widget.securTOTP.digits;
+        } else {
+          this._totp = widget.securTOTP.getTotp(widget.curTime);
+        }
       });
     }
     super.didUpdateWidget(oldWidget);
   }
 
   String formatOTP(String otp) {
-    switch (otp.length) {
+    switch (widget.securTOTP.digits) {
       case 6:
         return otp.substring(0, 3) + ' ' + otp.substring(3, 6);
       case 7:
@@ -160,9 +176,15 @@ class _TOTPValueState extends State<TOTPValue> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      formatOTP(_totp),
-      style: TextStyle(fontSize: 20),
+    return GestureDetector(
+      onTap: () => setState(() {
+        this._totp = widget.securTOTP.getTotp(widget.curTime);
+      }),
+      child: Text(
+        formatOTP(_totp),
+        style: TextStyle(
+            fontSize: 20, fontFeatures: [FontFeature.tabularFigures()]),
+      ),
     );
   }
 }

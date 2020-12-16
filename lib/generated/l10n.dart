@@ -394,6 +394,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Hide codes`
+  String get hideCodes {
+    return Intl.message(
+      'Hide codes',
+      name: 'hideCodes',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

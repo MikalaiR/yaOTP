@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 class SettingsViewModel with ChangeNotifier {
   static const String DB_KEY_PIN_CODE = "pin_code";
   static const String DB_KEY_IS_BIOMETRICS_ENABLED = "use_biometrics";
+  static const String DB_KEY_HIDE_CODES = "hide_codes";
 
   Box<dynamic> box;
 
@@ -11,6 +12,10 @@ class SettingsViewModel with ChangeNotifier {
 
   bool get isAuthenticationEnabled {
     return box.get(DB_KEY_PIN_CODE, defaultValue: null) != null;
+  }
+
+  bool get isCodesHidden {
+    return box.get(DB_KEY_HIDE_CODES, defaultValue: false);
   }
 
   Future<void> setPinCode(String pin) async {
@@ -37,6 +42,11 @@ class SettingsViewModel with ChangeNotifier {
 
   Future<void> setBiometricsEnabled(bool v) async {
     await box.put(DB_KEY_IS_BIOMETRICS_ENABLED, v);
+    notifyListeners();
+  }
+
+  Future<void> setCodesHidden(bool v) async {
+    await box.put(DB_KEY_HIDE_CODES, v);
     notifyListeners();
   }
 }

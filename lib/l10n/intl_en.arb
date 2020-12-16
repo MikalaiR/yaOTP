@@ -34,5 +34,6 @@
   "enterPassword": "Enter password",
   "password": "Password",
   "emptyToLeaveUnencrypted": "Empty to leave unencrypted",
-  "save": "Save"
+  "save": "Save",
+  "hideCodes": "Hide codes"
 }
